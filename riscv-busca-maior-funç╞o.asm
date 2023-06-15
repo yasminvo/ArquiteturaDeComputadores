@@ -69,7 +69,7 @@ fimPrograma:
 # Parâmetros de entrada: a0: endereço do vetor, a1: tamanho do vetor 
 
 buscaMaior:
-	addi sp, sp, -8  # Alocar espaço na pilha 2 variáveis locais a buscaMaior: maior, i
+	addi sp, sp, -12  # Alocar espaço na pilha 2 variáveis locais a buscaMaior: maior, i
 	
 	li t1, -999 # Var local "maior" - Inicialização com o -999 
  	sw t1, 0(sp) # Armazenar maior na pilha, como variável local de buscaMaior
@@ -94,34 +94,31 @@ proximo:
 	j for   #próxima interação do loop
 
 fimloop:
-	addi sp, sp, -4
-	sw ra, 0(sp)
 	
+	sw ra, 8(sp)
 	jal, ra, reinicializaVetor
-	
 	mv a2,a0
-	
 	mv a0, t1   # maior valor encontrado retorna em a0
-
-
-	lw ra, 0(sp)
+	lw ra, 8(sp)
+	addi sp, sp, 12
 	
-	addi sp, sp, 8  # Desalocar área da pilha usada por buscaMaior
-	
-	
-	
+	  
+	    
+	      
+	          # Desalocar área da pilha usada por buscaMaior
 	ret   # retorna p/ função main 
 	
 	
 reinicializaVetor:
+
+	mv a5, a0 #passa para a5 o valor de a0, aponta para início da filha
+	mv a6, a1 # a6 recebe valor da qtd de elementos do vetor
 	
 	li t2, 0 
-	
 	forr:
-
-		bge t2, a1, fimloopdois
+		bge t2, a6, fimloopdois
 		slli t3, t2, 2 # t3 = i * 4
-		add t4, a0, t3 # t4= &vetor + i*4
+		add t4, a5, t3 # t4= &vetor + i*4
 		sw t1, 0(t4) 
 		addi t2, t2, 1
 	
@@ -130,45 +127,30 @@ reinicializaVetor:
 fimloopdois:
 	ret
 
-	
-
-   
-
-  
 
 # --- printResultado --------------------------------------
 # a0: Contém o valor do maior nro do vetor 
 printResultado:
-
+	
+	addi sp, sp, -4
 	sw ra, 0(sp)
 	li t2, 0
-       
        forprint:
-       
        	bge t2, a1, fimloopfor
        	slli t3, t2, 2 # t3 = i * 4
 	add t4, a2, t3 # t4= &vetor + i*4
-	
 	lw a0, 0(t4)
 	li a7,1
 	ecall
-	
 	la a0, str2
 	li a7, 4
 	ecall
-	
 	addi t2, t2, 1
-       
-      
        j forprint
-
-
         fimloopfor:	
-               ret
-        	
-       
+               ret	
 	lw ra, 0(sp)
-        
+	addi sp,sp,4
         
         ret
       
